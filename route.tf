@@ -23,20 +23,20 @@ resource "aws_route_table_association" "public_2_assoc" {
   route_table_id = aws_route_table.public_rt.id
 }
 
-# 建立 Route Table（私網路由表）
+
+# 建立 Private Route Table 並加上 NAT Gateway 出口路由
 resource "aws_route_table" "private_rt_1" {
   vpc_id = aws_vpc.main.id
 
   route {
-    cidr_block = "0.0.0.0/0"                       # 指定任何外部流量
-    gateway_id = aws_internet_gateway.igw.id     # 導到 IGW 出去
+    cidr_block     = "0.0.0.0/0"                      # 所有對外流量
+    nat_gateway_id = aws_nat_gateway.nat.id          # 指向 NAT Gateway
   }
 
   tags = {
     Name = "private-rt1"
   }
 }
-
 # 將 Route Table 關聯到 Subnet 上
 
 resource "aws_route_table_association" "private_3_assoc" {
@@ -55,7 +55,7 @@ resource "aws_route_table" "private_rt_2" {
 
   route {
     cidr_block = "0.0.0.0/0"                       # 指定任何外部流量
-    gateway_id = aws_internet_gateway.igw.id      # 導到 IGW 出去
+    nat_gateway_id = aws_nat_gateway.nat.id      # 導到 IGW 出去
   }
 
   tags = {
